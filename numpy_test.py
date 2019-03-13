@@ -51,8 +51,8 @@ def zapros_int(interface, provider, device, period):
             days.append(x[1])
         totals.append(days)
         totals.append(maksimus)
-    else:
-        totals.append(0)
+    else: #Запрос данных не вернул.
+        totals.append('ERROR')
 
     return totals
 
@@ -115,22 +115,44 @@ def sum_zeros_and_query(zeros, query):
     
     return z
 
+def create_if_string(interface, provider, device, period):
+    year = period[0]
+    m_start = period[1]
+    m_stop = period[2]
+    d_start = period[3]
+    d_stop = period[4]
+    periods = create_periods(year, m_start, m_stop, d_start, d_stop)
 
+    day_if_periods = []
+    max_if_periods = []
+    # sum_if_periods = []
 
-periods = create_periods(2019,2,3,25,3)
-iface = '%xe-1/0/1%'
+    for p in periods:
+        z =[]
+        q =[]
+        z = create_zeros(p)
+        q = zapros_int(interface, provider, device, p)
+        if (q ==['ERROR']):
+            # Данных по интерфейсу нет... Приравниваем все к 0
+            q = z
+        temp_list = sum_zeros_and_query(z, q)
+        day_if_periods = day_if_periods + temp_list[0]
+        max_if_periods = max_if_periods + temp_list[1]
+    # sum_if_periods.append(day_if_periods)
+    # sum_if_periods.append(max_if_periods)
+
+    return day_if_periods, max_if_periods
+
+def create_direction_string(ifaces):
+    return
+
+periods = [2019,2,3,25,3]
+iface = '%xe-1/0/21%'
 prov = 'MEGAFON'
 dev = 'asta-gate-1'
-sum_if_periods = []
 
-for p in periods:
-    z =[]
-    q =[]
-    z = create_zeros(p)
-    q = zapros_int(iface, prov, dev, p)
-    temp_list = sum_zeros_and_query(z, q)
-    sum_if_periods = sum_if_periods + temp_list
-
+days, maxs = create_if_string(iface, prov, dev, periods)
 print()
-print(sum_if_periods)
-
+print(days)
+print(maxs)
+print()
