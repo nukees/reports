@@ -143,16 +143,48 @@ def create_if_string(interface, provider, device, period):
 
     return day_if_periods, max_if_periods
 
-def create_direction_string(ifaces):
-    return
+# Функция возвращает список максимальных значений по интерфейса.
+# Вход: Вывод:
+def create_direction_string(interfaces, provider, device, period):
+    direction_list = []
+    days = []
+    for interface in interfaces:
+        
+        days, maxif = create_if_string(interface, provider, device, period)
+        direction_list.append(maxif)
+    
+    return days, direction_list
 
-periods = [2019,2,3,25,3]
-iface = '%xe-1/0/21%'
+def avg_sum_days(kv_matr):    
+    t1 = []
+    x_array = np.array(kv_matr)
+    z = x_array.sum(axis=0)
+    
+    columns = (x_array != 0).sum(0)
+    result = []
+    result = z/columns
+
+    t1 = result.tolist()
+    # t1.append(x)
+    return  t1
+
+periods = [2019,2,3,26,5]
+year = periods[0]
+m_start = periods[1]
+m_stop = periods[2]
+d_start = periods[3]
+d_stop = periods[4]
+period_list = create_periods(year, m_start, m_stop, d_start, d_stop)
+ifaces = ['%xe-1/0/1%', '%xe-1/0/21%']
 prov = 'MEGAFON'
 dev = 'asta-gate-1'
 
-days, maxs = create_if_string(iface, prov, dev, periods)
+days, data = create_direction_string(ifaces, prov, dev, periods)
+avg = avg_sum_days(data)
 print()
+print(period_list)
 print(days)
-print(maxs)
+print(data)
+print(avg)
+
 print()
